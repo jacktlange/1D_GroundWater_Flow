@@ -6,7 +6,7 @@ Created on Sat Feb 25 12:09:02 2017
 """
 
 class GWplot:
-    def __init__():
+    def __init__(self):
         return
         #read in dataset, determine what dimensions, call appropriate method
     def plot1D():
