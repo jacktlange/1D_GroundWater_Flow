@@ -5,8 +5,8 @@ Created on Sat Feb 25 11:21:25 2017
 @author: Jack
 """
 import numpy as np
-class GWmodel:
-  
+class GWmodel(object):
+ 
     def __init__(self, state, dim):
         self.BC = np.zeros(3)
         
@@ -24,7 +24,7 @@ class GWmodel:
    
    
 
-    def setK(K):
+    def setK(self, K):
        self.K =K
     
                 
@@ -33,23 +33,23 @@ class GWmodel:
             raise ValueError('Only one dimension is supported in this release' )
         if X < 0:
             raise ValueError('Please use positive positions')
-        print('h')
-        np.vstack((self.BC, [h, X, Y]))
-        print(self.BC)
-        print('h')
+        
+        self.BC = np.stack((self.BC, [h, X, Y]))
+       
+       
         # for the sake of moving forwards in development, I will assume the user inputs these boundary conditions in order of increasing x, 
         # and that h=0 at x=0 is not a valid input. Both of these requirments will be cleaned up later
-#        if (self.BC[0,0] ==0) and (self.BC[0,1] == 0):
-#           self.BC = np.delete(self.BC, (0), axis =0) #remove the row of zeroes on t7op
+        if (self.BC[0,0] ==0) and (self.BC[0,1] == 0):
+           self.BC = np.delete(self.BC, (0), axis =0) #remove the row of zeroes on t7op
 #        
+        return self.BC
   
-  
-    def setNeuBC():
+    def setNeuBC(self):
         raise NotImplementedError('Neumann BCs not yet implemented')
-    def solve():
+    def solve(self):
         return
         #solution method depending on bc's , dimension
-    def out():
+    def out(self):
         return
         #create an output csv, return array of solution depending on dimensions
         
