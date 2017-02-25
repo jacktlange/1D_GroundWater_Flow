@@ -46,9 +46,14 @@ class GWmodel(object):
   
     def setNeuBC(self):
         raise NotImplementedError('Neumann BCs not yet implemented')
-    def solve(self):
-        return
-        #solution method depending on bc's , dimension
+    def solve(self):    #current version uses LAPACK to solve one dimensional K* d^2h/dx^2=0 using finite differences
+        self.Xsteps = 5 #allow users to control this in the future
+        self.dx = (self.BC[0,1] -self.bc[1,1] )/ Xsteps
+        A 
+        #in the future, solution method depending on bc's , dimension of problem.
+        # currently only 1d solution with 2 Direchlet conditions considered
+        
+        
     def out(self):
         return
         #create an output csv, return array of solution depending on dimensions
