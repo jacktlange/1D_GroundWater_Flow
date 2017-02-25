@@ -4,6 +4,16 @@ Created on Sat Feb 25 11:21:25 2017
 
 @author: Jack
 """
+
+
+def tridiag(T,x,y,z,k1=-1, k2=0, k3=1):  #Courtesy of user aamir23 on stackoverflow
+    a = [x]*(T-abs(k1)); b = [y]*(T-abs(k2)); c = [z]*(T-abs(k3))
+    return np.diag(a, k1) + np.diag(b, k2) + np.diag(c, k3)
+
+
+
+
+
 import numpy as np
 class GWmodel(object):
  
@@ -48,8 +58,10 @@ class GWmodel(object):
         raise NotImplementedError('Neumann BCs not yet implemented')
     def solve(self):    #current version uses LAPACK to solve one dimensional K* d^2h/dx^2=0 using finite differences
         self.Xsteps = 5 #allow users to control this in the future
-        self.dx = (self.BC[0,1] -self.bc[1,1] )/ Xsteps
-        A 
+       # self.dx = (self.BC[0,1] -self.bc[1,1] )/ Xsteps
+        A = tridiag(self.Xsteps,1,-2,1)
+        return A
+        
         #in the future, solution method depending on bc's , dimension of problem.
         # currently only 1d solution with 2 Direchlet conditions considered
         
