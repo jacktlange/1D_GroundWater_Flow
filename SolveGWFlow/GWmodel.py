@@ -8,7 +8,7 @@ import numpy as np
 class GWmodel(object):
  
     def __init__(self, state, dim):
-        self.BC = np.zeros(3)
+        self.BC = np.zeros((1,3))
         
         if state == 0:
             self.rhs = 0 #steady state condition
@@ -34,15 +34,15 @@ class GWmodel(object):
         if X < 0:
             raise ValueError('Please use positive positions')
         
-        self.BC = np.stack((self.BC, [h, X, Y]))
-       
-       
+        self.BC = np.append(self.BC, [[h, X, Y]], axis = 0)
+    
+      
         # for the sake of moving forwards in development, I will assume the user inputs these boundary conditions in order of increasing x, 
         # and that h=0 at x=0 is not a valid input. Both of these requirments will be cleaned up later
         if (self.BC[0,0] ==0) and (self.BC[0,1] == 0):
-           self.BC = np.delete(self.BC, (0), axis =0) #remove the row of zeroes on t7op
+          self.BC = np.delete(self.BC, (0), axis =0) #remove the row of zeroes on top. There HAS to be a more elegant way to do this
 #        
-        return self.BC
+        
   
     def setNeuBC(self):
         raise NotImplementedError('Neumann BCs not yet implemented')

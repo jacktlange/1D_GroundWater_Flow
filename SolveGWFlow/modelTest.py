@@ -8,5 +8,6 @@ import numpy as np
 import GWmodel
 
 model = GWmodel.GWmodel(0,1)
-print (model.setDirBC(1, 1, 0))
+print(model.setDirBC(1, 0, 0))
+print(model.setDirBC(0, 1, 0))
 
