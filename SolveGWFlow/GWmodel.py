@@ -62,15 +62,15 @@ class GWmodel(object):
     def solve(self):    #current version uses LAPACK to solve one dimensional K* d^2h/dx^2=0 using finite differences
         self.numPoints = 5 #allow users to choose the resolution of their solution in the future
         self.Xsteps = self.numPoints - 2 #When 2 direchlet BC's are used head must be solved at numPoints-2 locations
-        self.dx = (self.BC[1,1] -self.BC[0,1] )/self.Xsteps  #This and the value of K are useless for solving the steady-state case
+        self.dx = (self.BC[1,1] -self.BC[0,1] )/(self.numPoints - 1)  #This and the value of K are useless for solving the steady-state case
         A = tridiag(self.Xsteps,-1,2,-1)
         b = np.zeros(self.Xsteps)    #zeros only valid for steady state conditions
         b[0] = self.BC[0,0]    #Place boundary conditions in system
         b[self.Xsteps-1] = self.BC[1,0] 
         self.h = np.linalg.solve(A,b) 
-        #append DIrechlet BC's to either end of the list
-        self.h = np.append(self.h, self.BC[1,1])
-        self.h = np.insert(self.h, 0, self.BC[0,1])
+        #append Direchlet BC's to either end of the list
+        self.h = np.append(self.h, self.BC[0,1])
+        self.h = np.insert(self.h, 0, self.BC[1,1])
         return self.h
         #in the future, method of solution should depend on the type of boundary conditions and 
         # how many dimensions are being considered
@@ -83,8 +83,8 @@ class GWmodel(object):
         X= np.empty(self.numPoints)
         for i in range(self.numPoints):
             X[i] = i * self.dx
-        self.hOut = np.stack((self.h, X))
-        
+        self.hOut = np.stack((X, self.h))
+        self.hOut = np.transpose(self.hOut)
         HeadOut = 'C:\Users\Jack\Documents\Computational_methods_2017\CompMethodsProject\SolveGWFlow\head.txt'
         np.savetxt(HeadOut, self.hOut, fmt = '%-10.5f', delimiter = ',', newline = '\n')
         return self.hOut
