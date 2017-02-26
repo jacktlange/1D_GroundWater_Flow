@@ -12,4 +12,5 @@ model.setDirBC(1, 0, 0)
 model.setDirBC(0, 1, 0)
 
 
-print(model.solve())
+model.solve()
+print(model.out())
