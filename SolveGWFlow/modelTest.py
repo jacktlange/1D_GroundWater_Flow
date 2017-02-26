@@ -6,11 +6,15 @@ Created on Sat Feb 25 12:44:21 2017
 """
 import numpy as np
 import GWmodel
+import GWplot
 
 model = GWmodel.GWmodel(0,1)
-model.setDirBC(1, 0, 0)
-model.setDirBC(0, 1, 0)
+model.setDirBC(10, 0, 0)
+model.setDirBC(0, 10, 0)
 
 
 model.solve()
-print(model.out())
+
+
+plotter = GWplot.GWplot()
+plotter.plot1D(model.out())

@@ -34,7 +34,7 @@ class GWmodel(object):
    
    
 
-    def setK(self, K):
+    def setK(self, K):  #unnecessary for the steady state case
        self.K =K
     
                 
@@ -69,8 +69,8 @@ class GWmodel(object):
         b[self.Xsteps-1] = self.BC[1,0] 
         self.h = np.linalg.solve(A,b) 
         #append Direchlet BC's to either end of the list
-        self.h = np.append(self.h, self.BC[0,1])
-        self.h = np.insert(self.h, 0, self.BC[1,1])
+        self.h = np.append(self.h, self.BC[1,0])
+        self.h = np.insert(self.h, 0, self.BC[0,0])
         return self.h
         #in the future, method of solution should depend on the type of boundary conditions and 
         # how many dimensions are being considered
@@ -80,6 +80,7 @@ class GWmodel(object):
     def out(self):
         
         #create an output csv for head, outputting the most recent solution. The first column is position, second is head
+        #returns location of the output file
         X= np.empty(self.numPoints)
         for i in range(self.numPoints):
             X[i] = i * self.dx
@@ -87,4 +88,4 @@ class GWmodel(object):
         self.hOut = np.transpose(self.hOut)
         HeadOut = 'C:\Users\Jack\Documents\Computational_methods_2017\CompMethodsProject\SolveGWFlow\head.txt'
         np.savetxt(HeadOut, self.hOut, fmt = '%-10.5f', delimiter = ',', newline = '\n')
-        return self.hOut
+        return HeadOut
