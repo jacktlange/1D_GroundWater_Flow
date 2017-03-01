@@ -91,10 +91,46 @@ class GWmodel(object):
         self.h = np.insert(self.h, 0, self.BC[0,0])
         
         return self.h
-        #in the future, method of solution should depend on the type of boundary conditions and the number dimensionsbeing considered
+        #in the future, method of solution should depend on the type of boundary conditions and the number dimensions considered
 
+        #Soultion for transient one dimensional GW flow (One dimensional diffusion equation)
         
-    #create an output csv for head, outputting the most recent solution. The first column is position, second is head
+        #Boundary conditions required: head at time zero, at all points of interest
+        self.numPoints = self.BC.shape[0]
+        self.Xsteps = self.numPoints -1
+        
+        
+        
+        
+        self.dx = (self.BC[self.nnumPoints,1] -self.BC[0,1] )/(self.Xsteps)
+        self.dt =0.5 * self.dx * self.dx * self.K   #condition for convergence
+    
+        
+        self.timeElapsed = 10   #should be a user input 
+        self.timeSteps = int( self.timeElapsed / self.dx )
+        
+        
+        
+        self.h = np.array(self.timeSteps, self.numPoints)    #each new row will  be a new timestep, each column will rpresent a position in x
+            
+
+        for t in range(self.timeSteps)
+            for x in range(self.numPoints)
+                
+                if self.timeSteps == 0:
+                    #put initial conditions into self.h
+                    self.h[t, x] = self.BC[x, 0]
+                else:
+                    #solve for new head at timestep using a forwards difference discretization for the time derrivative
+                    self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
+                    #at some point, associate a time with each solution in the putpus csv
+        
+        
+        
+        
+        
+        
+    #createn output csv for head, outputting the most recent solution. The first column is position, second is head
     #returns location of the output file   
     def out(self):
        

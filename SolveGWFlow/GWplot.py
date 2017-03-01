@@ -16,7 +16,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-
+import pandas as pd
 
 class GWplot(object):
     
@@ -26,6 +26,9 @@ class GWplot(object):
     def plot1D(self, dataFile):
         #load an output file from GWmodel.py
         self.data = np.loadtxt(dataFile, delimiter = ',') 
+        datapd = pd.read_csv(dataFile)
+        datapd.columns = ['Position [m]', 'head [m]']    #ASK ANDY
+        plt.plot(datapd['Position [m]'], datapd['head [m]'])
         
         #split imported data into 2 arrays, one for position and one for head
         self.data = np.hsplit(self.data,2)
@@ -33,10 +36,10 @@ class GWplot(object):
         self.h = self.data[1]
 
         #plot results      
-        plt.xlabel('Position, m')
-        plt.ylabel('Head, m')
-        plt.title('One dimensional steady-state solution to GW flow equation')
-        plt.plot(self.X, self.h, 'ro')
+      # plt.xlabel('Position, m')
+     #  plt.ylabel('Head, m')
+      # plt.title('One dimensional steady-state solution to GW flow equation')
+#       plt.plot(self.X, self.h, 'ro')
         
                   
         
