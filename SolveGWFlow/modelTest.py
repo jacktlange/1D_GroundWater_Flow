@@ -13,7 +13,7 @@ for i in range(100):
     else:
         model.setDirBC(0, i, 0)
     
-model.solve()  #need option for number of timesteps
+model.solve()  #need option for number of timesteps and number of points for the steady state
 
 model.out()
 

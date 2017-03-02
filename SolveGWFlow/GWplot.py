@@ -10,6 +10,8 @@
 #   10.00000                                                                         
 #   7.50000                                                                              
 #   5.00000            
+#   
+#   Outputs a plot of h vs position 
                                                                   
 #                                                                                             
 #    plot1dTr :                                                                  
@@ -28,6 +30,8 @@
 #     4.37500   ,6.56250   ,5.00000   ,6.09375   ,5.54688   ,4.45312   ,4.29688   ,2.10938   ,1.56250   ,0.00000   
 #     6.56250   ,4.68750   ,6.32812   ,5.27344   ,5.27344   ,4.92188   ,3.28125   ,2.92969   ,1.05469   ,0.00000   
 #     4.68750   ,6.44531   ,4.98047   ,5.80078   ,5.09766   ,4.27734   ,3.92578   ,2.16797   ,1.46484   ,0.00000  
+#   
+#    outputs  a plot of h vs position for each timestep
 
 
 
@@ -49,13 +53,15 @@ class GWplot(object):
     def plot1D(self, dataFile):
         #load an output file from GWmodel.py
         self.data = np.loadtxt(dataFile, delimiter = ',') 
-        
+        #extract information in the header
         txtData = open(dataFile, "r")    
         header = txtData.readline()
         headerSplit = header.split(',')
         dx = float(headerSplit[1])
         dt = float(headerSplit[3])
         K = float(headerSplit[5])
+       
+        #create a matrix for each position to be plotted
         position = np.zeros(self.data.shape[0])
         for i in range(self.data.shape[0]):
             position[i] = i*dx
@@ -71,20 +77,23 @@ class GWplot(object):
         
                   
     def plot1DTr(self, dataFile):
-            
+        #load an output file from GWmodel.py    
         self.data = np.loadtxt(dataFile, delimiter = ',')
-         
+        
+        #extract information in the header
         txtData = open(dataFile, "r")    
         header = txtData.readline()
         headerSplit = header.split(',')
-        
         dx = float(headerSplit[1])
         dt = float(headerSplit[3])
         K = float(headerSplit[5])
-     
+        
+        #create a matrix for each position to be plotted
         position = np.zeros(self.data.shape[1])
         for i in range(self.data.shape[1]):
             position[i] = i*dx
+        
+        #create a figure for each timestep
         for i in range(self.data.shape[0]):
             head = self.data[i,:]
             plt.figure(i)

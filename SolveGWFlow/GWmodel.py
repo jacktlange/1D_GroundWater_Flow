@@ -76,10 +76,13 @@ class GWmodel(object):
         
         
     #Set up and solve a system of finite difference equations using LAPACK 
-    def solve(self):    #current version is only capable of solving  K* d^2h/dx^2 = 0 
+    #Return a solution to the GWflow equation in matrix form
+    # if transient, numpts is the number of timesteps to be solved
+    # if steady state, numpts is the number of points where a solution will be obtained
+    def solve(self, numpts):    #current version is only capable of solving  K* d^2h/dx^2 = 0 
         if self.state == 'steady':
         # Establish the resolution of the solution
-             self.numPoints = self.BC.shape[0] #allow users to choose the resolution of their solution in the future
+             self.numPoints = numpts #allow users to choose the resolution of their solution in the future
              self.Xsteps = self.numPoints - 2 #When 2 direchlet BC's are used head must be solved at numPoints-2 locations
              self.dx = (self.BC[1,1] -self.BC[0,1] )/(self.numPoints - 1)  #This and the value of K are useless for solving the steady-state case
              self.dt = 0
@@ -99,29 +102,34 @@ class GWmodel(object):
              self.h = np.insert(self.h, 0, self.BC[0,0])
         
              return self.h
-        #in the future, method of solution should depend on the type of boundary conditions and the number dimensions considered
+     
 
+     
+        
+        
+        
+        
+        
+        
         #Soultion for transient one dimensional GW flow (One dimensional diffusion equation)
-                #Boundary conditions required: head at time zero, at all points of interest
+        #Boundary conditions required: head at time zero, at all points of interest
         elif self.state == 'transient':
-            self.numPoints = self.BC.shape[0]
+            self.numPoints = self.BC.shape[0]   #The number of points can be extrapolated from the initial state 
             self.Xsteps = self.numPoints -1
-        
-        
-        
-        
+             
+                
             self.dx = (self.BC[self.numPoints-1,1] -self.BC[0,1] )/(self.Xsteps)
             self.dt =0.5 * self.dx * self.dx * self.K   #condition for convergence
   
         
-            self.timeElapsed = 100 * self.dt  #should be a user input 
+            self.timeElapsed =  numpts* self.dt  
             self.timeSteps = int( self.timeElapsed / self.dt )
         
         
         
             self.h = np.zeros((self.timeSteps+1, self.numPoints+1) )   #each new row will  be a new timestep, each column will rpresent a position in x
             
-
+            #Use forwards differences to solve th ediffusion equation in one dimension
             for t in range(0,self.timeSteps+1):
                 for x in range(0,self.numPoints):
                 
@@ -129,21 +137,22 @@ class GWmodel(object):
                     #put initial conditions into self.h
                         self.h[t, x] = self.BC[x, 0]
                    
-                    elif  x == 0 and t <> 0:
+                    elif  x == 0 and t <> 0: #Neumann BC dh/dx = 0 at the boundary of the domain
                         self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x +1] ) + self.h[t-1, x ]  
-                    elif x == self.numPoints and t <> 0:
+                   
+                    elif x == self.numPoints and t <> 0: #Neumann BC dh/dx = 0 at the boundary of the domain
                         self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x ] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
-                    elif t <> 0: #need if else for edges!
-                    #solve for new head at timestep using a forwards difference discretization for the time derrivative
+                   
+                     elif t <> 0: 
                         self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
-                    #at some point, associate a time with each solution in the 
+          
             return self.h
         
         
         
         
         
-    #createn output csv for head, outputting the most recent solution. The header contains dx and dt values.
+    #creat an output csv for head, outputting the most recent solution. The header contains dx and dt values.
     #returns the location of the output file   
     def out(self):   
       
