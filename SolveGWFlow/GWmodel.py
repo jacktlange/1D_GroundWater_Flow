@@ -1,15 +1,21 @@
 ##################################################################################################
-#   An object that is capable of solving the GW flow equation. Currently it is                   #
-#   only capable of solving the one dimensional, homogenous, steady-state case.                  #
-#                                                                                                #   
-#   Workflow for 1D steady-state solution:                                                       #
-#       Initialize a GWmodel object                                                              #
-#       Set Direchlet BC's, in order of increasing position                                      #
-#       Solve the system                                                                         #
-#       Output a .csv                                                                            #
-#       Use GWplot.py to visualize your results                                                  # 
-#                                                                                                #
-#   -Jack Lange 2/26/17                                                                          # 
+#   An object that is capable of solving the GW flow equation. Currently it is                   
+#    capable of solving the one dimensional, homogenous, steady-state or transient case.                  
+#                                                                                                   
+#   Workflow for 1D steady-state solution:                                                       
+#       Initialize a GWmodel object                                                              
+#       Set Direchlet BC's, in order of increasing position                                      
+#       Solve the system                                                                         
+#       Output a .csv                                                                            
+#       Use GWplot.py to visualize your results                                                   
+#   Workflow for 1D transient solution            
+#       Initialize a GWmodel object                                                              
+#       Use setDirBC to initialize the head value at each point in the domain at time zero   
+#       Neuman boundary conditions (dh/dx = 0) are assumed on both boundaries of the domain                              
+#       Solve the system                                                                         
+#       Output a .csv                                                                            
+#       Use GWplot.py to visualize your results                                                                                   
+#   -Jack Lange 3/1/2017                                                                          
 ##################################################################################################
 
 
@@ -32,9 +38,9 @@ class GWmodel(object):
         self.BC = np.zeros((1,3))
         
         if state == 0:
-            self.rhs = 0 #steady state condition
+            self.state = 'steady'
         else:
-            raise ValueError('Only steady-state conditions are supported in this release' )
+           self.state = 'transient'
             #Demand that changing head with time data be added/calculated
         
         if dim == 1:
@@ -71,65 +77,67 @@ class GWmodel(object):
         
     #Set up and solve a system of finite difference equations using LAPACK 
     def solve(self):    #current version is only capable of solving  K* d^2h/dx^2 = 0 
-        #Establish the resolution of the solution
-#        self.numPoints = 5 #allow users to choose the resolution of their solution in the future
-#        self.Xsteps = self.numPoints - 2 #When 2 direchlet BC's are used head must be solved at numPoints-2 locations
-#        self.dx = (self.BC[1,1] -self.BC[0,1] )/(self.numPoints - 1)  #This and the value of K are useless for solving the steady-state case
-#        
-#        #set up the system of equations, Ah=b
-#        A = tridiag(self.Xsteps,-1,2,-1)
-#        b = np.zeros(self.Xsteps)    #zeros only valid for steady state conditions
-#        #palce boundary conditions in the system
-#        b[0] = self.BC[0,0]    
-#        b[self.Xsteps-1] = self.BC[1,0] 
-#           
-#        #Solve the system!  (Instert sounds of gears crunching)
-#        self.h = np.linalg.solve(A,b) 
-#       
-#        #append Direchlet BC's to both ends of the list
-#        self.h = np.append(self.h, self.BC[1,0])
-#        self.h = np.insert(self.h, 0, self.BC[0,0])
-#        
-#        return self.h
-#        #in the future, method of solution should depend on the type of boundary conditions and the number dimensions considered
+        if self.state == 'steady':
+        # Establish the resolution of the solution
+             self.numPoints = self.BC.shape[0] #allow users to choose the resolution of their solution in the future
+             self.Xsteps = self.numPoints - 2 #When 2 direchlet BC's are used head must be solved at numPoints-2 locations
+             self.dx = (self.BC[1,1] -self.BC[0,1] )/(self.numPoints - 1)  #This and the value of K are useless for solving the steady-state case
+             self.dt = 0
+             self.K = 0
+        #set up the system of equations, Ah=b
+             A = tridiag(self.Xsteps,-1,2,-1)
+             b = np.zeros(self.Xsteps)    #zeros only valid for steady state conditions
+        #palce boundary conditions in the system
+             b[0] = self.BC[0,0]    
+             b[self.Xsteps-1] = self.BC[1,0] 
+           
+        #Solve the system!  (Instert sounds of gears crunching)
+             self.h = np.linalg.solve(A,b) 
+       
+        #append Direchlet BC's to both ends of the list
+             self.h = np.append(self.h, self.BC[1,0])
+             self.h = np.insert(self.h, 0, self.BC[0,0])
+        
+             return self.h
+        #in the future, method of solution should depend on the type of boundary conditions and the number dimensions considered
 
         #Soultion for transient one dimensional GW flow (One dimensional diffusion equation)
-        
-        #Boundary conditions required: head at time zero, at all points of interest
-        self.numPoints = self.BC.shape[0]
-        self.Xsteps = self.numPoints -1
-        
-        
+                #Boundary conditions required: head at time zero, at all points of interest
+        elif self.state == 'transient':
+            self.numPoints = self.BC.shape[0]
+            self.Xsteps = self.numPoints -1
         
         
-        self.dx = (self.BC[self.numPoints-1,1] -self.BC[0,1] )/(self.Xsteps)
-        self.dt =0.5 * self.dx * self.dx * self.K   #condition for convergence
+        
+        
+            self.dx = (self.BC[self.numPoints-1,1] -self.BC[0,1] )/(self.Xsteps)
+            self.dt =0.5 * self.dx * self.dx * self.K   #condition for convergence
   
         
-        self.timeElapsed = 10 * self.dt  #should be a user input 
-        self.timeSteps = int( self.timeElapsed / self.dt )
+            self.timeElapsed = 100 * self.dt  #should be a user input 
+            self.timeSteps = int( self.timeElapsed / self.dt )
         
         
         
-        self.h = np.zeros((self.timeSteps+1, self.numPoints+1) )   #each new row will  be a new timestep, each column will rpresent a position in x
+            self.h = np.zeros((self.timeSteps+1, self.numPoints+1) )   #each new row will  be a new timestep, each column will rpresent a position in x
             
 
-        for t in range(0,self.timeSteps+1):
-            for x in range(0,self.numPoints):
+            for t in range(0,self.timeSteps+1):
+                for x in range(0,self.numPoints):
                 
-                if t == 0:
+                    if t == 0:
                     #put initial conditions into self.h
-                    self.h[t, x] = self.BC[x, 0]
+                        self.h[t, x] = self.BC[x, 0]
                    
-                elif  x == 0 and t <> 0:
-                       self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x +1] ) + self.h[t-1, x ]  
-                elif x == self.numPoints and t <> 0:
-                       self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x ] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
-                elif t <> 0: #need if else for edges!
+                    elif  x == 0 and t <> 0:
+                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x +1] ) + self.h[t-1, x ]  
+                    elif x == self.numPoints and t <> 0:
+                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x ] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
+                    elif t <> 0: #need if else for edges!
                     #solve for new head at timestep using a forwards difference discretization for the time derrivative
-                    self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
-                    #at some point, associate a time with each solution in the putpus csv
-        return self.h
+                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
+                    #at some point, associate a time with each solution in the 
+            return self.h
         
         
         
