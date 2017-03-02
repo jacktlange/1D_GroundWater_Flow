@@ -135,18 +135,10 @@ class GWmodel(object):
         
         
         
-    #createn output csv for head, outputting the most recent solution. The first column is position, second is head
-    #returns location of the output file   
-    def out(self):
-       
-        #Establish an array that contains each position where head was calculated
-        X= np.empty(self.numPoints)
-        for i in range(self.numPoints):
-            X[i] = i * self.dx
-       
-        # Connect the position and Head arrays aand print the combination to a text file
-     #   self.hOut = np.stack((X, self.h))
-       # self.hOut = np.transpose(self.hOut)
+    #createn output csv for head, outputting the most recent solution. The header contains dx and dt values.
+    #returns the location of the output file   
+    def out(self):   
+      
         HeadOut = 'C:\Users\Jack\Documents\Computational_methods_2017\CompMethodsProject\SolveGWFlow\head.txt'
-        np.savetxt(HeadOut, self.h, fmt = '%-10.5f', delimiter = ',', newline = '\n',header='%f , %f' %(self.dx,self.dt))
+        np.savetxt(HeadOut, self.h, fmt = '%-10.5f', delimiter = ',', newline = '\n',header='dx,%f,dt,%f,K,%f,' %(self.dx,self.dt, self.K))
         return HeadOut

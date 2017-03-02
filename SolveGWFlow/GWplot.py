@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+
+
 class GWplot(object):
     
     def __init__(self):
@@ -26,9 +28,9 @@ class GWplot(object):
     def plot1D(self, dataFile):
         #load an output file from GWmodel.py
         self.data = np.loadtxt(dataFile, delimiter = ',') 
-        datapd = pd.read_csv(dataFile)
-        datapd.columns = ['Position [m]', 'head [m]']   
-        plt.plot(datapd['Position [m]'], datapd['head [m]'])
+#        datapd = pd.read_csv(dataFile)
+#        datapd.columns = ['Position [m]', 'head [m]']   
+#        plt.plot(datapd['Position [m]'], datapd['head [m]'])
         
         #split imported data into 2 arrays, one for position and one for head
         self.data = np.hsplit(self.data,2)
@@ -36,24 +38,34 @@ class GWplot(object):
         self.h = self.data[1]
 
         #plot results      
-      # plt.xlabel('Position, m')
-     #  plt.ylabel('Head, m')
-      # plt.title('One dimensional steady-state solution to GW flow equation')
-#       plt.plot(self.X, self.h, 'ro')
+        plt.xlabel('Position, m')
+        plt.ylabel('Head, m')
+        plt.title('One dimensional steady-state solution to GW flow equation')
+        plt.plot(self.X, self.h, 'ro')
         
                   
     def plot1DTr(self, dataFile):
             
         self.data = np.loadtxt(dataFile, delimiter = ',')
-           # dx = 
-            #dt =      implement method to read both of these fro mfile 
-        dx = 1
+         
+        txtData = open(dataFile, "r")    
+        header = txtData.readline()
+        headerSplit = header.split(',')
+        
+        dx = float(headerSplit[1])
+        dt = float(headerSplit[3])
+        K = float(headerSplit[5])
+     
         position = np.zeros(self.data.shape[1])
         for i in range(self.data.shape[1]):
             position[i] = i*dx
         for i in range(self.data.shape[0]):
             head = self.data[i,:]
             plt.figure(i)
+   
+            plt.xlabel('Position, m')
+            plt.ylabel('Head, m')
+            plt.title('One dimensional transient solution to GW flow equation at timestep: %d' %i)
             plt.plot( position, head)
             
     def plot2D(self):
