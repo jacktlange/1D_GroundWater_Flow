@@ -13,7 +13,7 @@ for i in range(100):
     else:
         model.setDirBC(0, i, 0)
     
-print(model.solve())
+model.solve()
 
 model.out()
 
