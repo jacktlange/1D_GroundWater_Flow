@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Mar 02 00:06:01 2017
-
-@author: Jack
-"""
 
 
 import numpy as np
@@ -13,22 +7,21 @@ import GWplot
 
 
 
-model = GWmodel.GWmodel(0,1)
 
-model.setDirBC(20, 0, 0)
-model.setDirBC(0, 20, 0)
-    
-model.solve(20)  #need option for number of timesteps and number of points for the steady state
+#Uncomment below to observe a steady state solution to the 1d GW flow equation
 
-model.out()
-
-plotter = GWplot.GWplot()
-
-plotter.plot1D(model.out())
-
-
-
-
+#model = GWmodel.GWmodel(0,1)
+#
+#model.setDirBC(20, 0, 0)
+#model.setDirBC(0, 20, 0)
+#    
+#model.solve(20)  
+#
+#model.out()
+#
+#plotter = GWplot.GWplot()
+#
+#plotter.plot1D(model.out())
 
 
 
@@ -52,7 +45,7 @@ plotter.plot1D(model.out())
 #    else:
 #        model.setDirBC(0, i, 0)
 #    
-#model.solve(15)  #need option for number of timesteps and number of points for the steady state
+#model.solve(15)  
 #
 #model.out()
 #
