@@ -72,26 +72,26 @@ class GWmodel(object):
     #Set up and solve a system of finite difference equations using LAPACK 
     def solve(self):    #current version is only capable of solving  K* d^2h/dx^2 = 0 
         #Establish the resolution of the solution
-        self.numPoints = 5 #allow users to choose the resolution of their solution in the future
-        self.Xsteps = self.numPoints - 2 #When 2 direchlet BC's are used head must be solved at numPoints-2 locations
-        self.dx = (self.BC[1,1] -self.BC[0,1] )/(self.numPoints - 1)  #This and the value of K are useless for solving the steady-state case
-        
-        #set up the system of equations, Ah=b
-        A = tridiag(self.Xsteps,-1,2,-1)
-        b = np.zeros(self.Xsteps)    #zeros only valid for steady state conditions
-        #palce boundary conditions in the system
-        b[0] = self.BC[0,0]    
-        b[self.Xsteps-1] = self.BC[1,0] 
-           
-        #Solve the system!  (Instert sounds of gears crunching)
-        self.h = np.linalg.solve(A,b) 
-       
-        #append Direchlet BC's to both ends of the list
-        self.h = np.append(self.h, self.BC[1,0])
-        self.h = np.insert(self.h, 0, self.BC[0,0])
-        
-        return self.h
-        #in the future, method of solution should depend on the type of boundary conditions and the number dimensions considered
+#        self.numPoints = 5 #allow users to choose the resolution of their solution in the future
+#        self.Xsteps = self.numPoints - 2 #When 2 direchlet BC's are used head must be solved at numPoints-2 locations
+#        self.dx = (self.BC[1,1] -self.BC[0,1] )/(self.numPoints - 1)  #This and the value of K are useless for solving the steady-state case
+#        
+#        #set up the system of equations, Ah=b
+#        A = tridiag(self.Xsteps,-1,2,-1)
+#        b = np.zeros(self.Xsteps)    #zeros only valid for steady state conditions
+#        #palce boundary conditions in the system
+#        b[0] = self.BC[0,0]    
+#        b[self.Xsteps-1] = self.BC[1,0] 
+#           
+#        #Solve the system!  (Instert sounds of gears crunching)
+#        self.h = np.linalg.solve(A,b) 
+#       
+#        #append Direchlet BC's to both ends of the list
+#        self.h = np.append(self.h, self.BC[1,0])
+#        self.h = np.insert(self.h, 0, self.BC[0,0])
+#        
+#        return self.h
+#        #in the future, method of solution should depend on the type of boundary conditions and the number dimensions considered
 
         #Soultion for transient one dimensional GW flow (One dimensional diffusion equation)
         
@@ -102,29 +102,34 @@ class GWmodel(object):
         
         
         
-        self.dx = (self.BC[self.nnumPoints,1] -self.BC[0,1] )/(self.Xsteps)
+        self.dx = (self.BC[self.numPoints-1,1] -self.BC[0,1] )/(self.Xsteps)
         self.dt =0.5 * self.dx * self.dx * self.K   #condition for convergence
-    
+  
         
-        self.timeElapsed = 10   #should be a user input 
-        self.timeSteps = int( self.timeElapsed / self.dx )
+        self.timeElapsed = 10 * self.dt  #should be a user input 
+        self.timeSteps = int( self.timeElapsed / self.dt )
         
         
         
-        self.h = np.array(self.timeSteps, self.numPoints)    #each new row will  be a new timestep, each column will rpresent a position in x
+        self.h = np.zeros((self.timeSteps+1, self.numPoints) )   #each new row will  be a new timestep, each column will rpresent a position in x
             
 
-        for t in range(self.timeSteps)
-            for x in range(self.numPoints)
+        for t in range(0,self.timeSteps-1):
+            for x in range(0,self.numPoints-1):
                 
-                if self.timeSteps == 0:
+                if t == 0:
                     #put initial conditions into self.h
                     self.h[t, x] = self.BC[x, 0]
-                else:
+                   
+                elif  x == 0 and t <> 0:
+                       self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x +1] ) + self.h[t-1, x ]  
+                elif x == self.numPoints-1 and t <> 0:
+                       self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x ] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
+                elif t <> 0: #need if else for edges!
                     #solve for new head at timestep using a forwards difference discretization for the time derrivative
                     self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
                     #at some point, associate a time with each solution in the putpus csv
-        
+        return self.h
         
         
         
@@ -140,9 +145,8 @@ class GWmodel(object):
             X[i] = i * self.dx
        
         # Connect the position and Head arrays aand print the combination to a text file
-        self.hOut = np.stack((X, self.h))
-        self.hOut = np.transpose(self.hOut)
+     #   self.hOut = np.stack((X, self.h))
+       # self.hOut = np.transpose(self.hOut)
         HeadOut = 'C:\Users\Jack\Documents\Computational_methods_2017\CompMethodsProject\SolveGWFlow\head.txt'
-        np.savetxt(HeadOut, self.hOut, fmt = '%-10.5f', delimiter = ',', newline = '\n')
-       
+        np.savetxt(HeadOut, self.h, fmt = '%-10.5f', delimiter = ',', newline = '\n',header='%f , %f' %(self.dx,self.dt))
         return HeadOut

@@ -27,7 +27,7 @@ class GWplot(object):
         #load an output file from GWmodel.py
         self.data = np.loadtxt(dataFile, delimiter = ',') 
         datapd = pd.read_csv(dataFile)
-        datapd.columns = ['Position [m]', 'head [m]']    #ASK ANDY
+        datapd.columns = ['Position [m]', 'head [m]']   
         plt.plot(datapd['Position [m]'], datapd['head [m]'])
         
         #split imported data into 2 arrays, one for position and one for head
@@ -42,7 +42,19 @@ class GWplot(object):
 #       plt.plot(self.X, self.h, 'ro')
         
                   
-        
-        
+    def plot1DTr(self, dataFile):
+            
+        self.data = np.loadtxt(dataFile, delimiter = ',')
+           # dx = 
+            #dt =      implement method to read both of these fro mfile 
+        dx = 1
+        position = np.zeros(self.data.shape[1])
+        for i in range(self.data.shape[1]):
+            position[i] = i*dx
+        for i in range(self.data.shape[0]):
+            head = self.data[i,:]
+            plt.figure(i)
+            plt.plot( position, head)
+            
     def plot2D(self):
        raise NotImplementedError('2D functionality not yet implemented')
