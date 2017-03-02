@@ -143,7 +143,7 @@ class GWmodel(object):
                     elif x == self.numPoints and t <> 0: #Neumann BC dh/dx = 0 at the boundary of the domain
                         self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x ] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
                    
-                     elif t <> 0: 
+                    elif t <> 0: 
                         self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
           
             return self.h
