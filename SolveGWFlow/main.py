@@ -3,27 +3,27 @@
 import numpy as np
 import GWmodel
 import GWplot
-
+from matplotlib import pyplot as plt
 
 
 
 
 #Uncomment below to observe a steady state solution to the 1d GW flow equation
 
-#model = GWmodel.GWmodel(0,1)
-#
-#model.setDirBC(20, 0, 0)
-#model.setDirBC(0, 20, 0)
-#    
-#model.solve(20)  
-#
-#model.out()
-#
-#plotter = GWplot.GWplot()
-#
-#plotter.plot1D(model.out())
+model = GWmodel.GWmodel(0,1)
 
+model.setDirBC(20, 0, 0)
+model.setDirBC(0, 20, 0)
+   
+model.solve(20)  
 
+model.out()
+
+plotter = GWplot.GWplot()
+
+plotter.plot1D(model.out())
+
+plt.show()
 
 
 
