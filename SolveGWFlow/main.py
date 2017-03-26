@@ -22,19 +22,19 @@ import GWplot
 #plotter = GWplot.GWplot()
 #
 #plotter.plot1D(model.out())
-
-
-
-
-
-
+#
+#
+#
+#
+#
+#
 
 
 
 
 
 #Uncomment below and run to observe a transient case solution
-
+#
 #model = GWmodel.GWmodel(1,1)
 #model.setK(1)
 #

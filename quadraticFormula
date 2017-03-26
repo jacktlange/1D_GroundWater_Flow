@@ -1,7 +1,0 @@
-
-
-quadratic(1,2,3)
-
-
-def quadratic(a,b,c):
-    return -b +(b*b -4*a*c)**0.5)/(2*a)
