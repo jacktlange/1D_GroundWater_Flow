@@ -32,16 +32,15 @@ def tridiag(T,x,y,z,k1=-1, k2=0, k3=1):
 import numpy as np
 class GWmodel(object):
  
-    #state = 0 corresponds to steady-state
+    #Pass a string, 'steady' or 'transient' to define the model parameters
     #dim controls how many dimensions will be considered, currently only 1d is supported
     def __init__(self, state, dim):
         self.BC = np.zeros((1,3))
         
-        if state == 0:
-            self.state = 'steady'
+        if state == 'steady' or state =='transient':
+            self.state = state
         else:
-           self.state = 'transient'
-            #Demand that changing head with time data be added/calculated
+            raise ValueError('The state was not specifiend properly' )
         
         if dim == 1:
             self.dim = 1
