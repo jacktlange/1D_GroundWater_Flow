@@ -45,7 +45,7 @@ for i in range(100):
     else:
         model.setDirBC(0, i, 0)
     
-model.solve(15)  
+model.solve(100)  
 
 model.out()
 

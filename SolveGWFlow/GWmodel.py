@@ -126,24 +126,33 @@ class GWmodel(object):
         
         
         
-            self.h = np.zeros((self.timeSteps+1, self.numPoints+1) )   #each new row will  be a new timestep, each column will rpresent a position in x
+            self.h = np.zeros((self.timeSteps, self.numPoints) )   #each new row will  be a new timestep, each column will rpresent a position in x
             
             #Use forwards differences to solve th ediffusion equation in one dimension
-            for t in range(0,self.timeSteps+1):
-                for x in range(0,self.numPoints):
-                
-                    if t == 0:
-                    #put initial conditions into self.h
-                        self.h[t, x] = self.BC[x, 0]
-                   
-                    elif  x == 0 and t <> 0: #Neumann BC dh/dx = 0 at the boundary of the domain
-                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x +1] ) + self.h[t-1, x ]  
-                   
-                    elif x == self.numPoints and t <> 0: #Neumann BC dh/dx = 0 at the boundary of the domain
-                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x ] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
-                   
-                    elif t <> 0: 
-                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
+#            for t in range(0,self.timeSteps+1):
+#                for x in range(0,self.numPoints):
+#                
+#                    if t == 0:
+#                    #put initial conditions into self.h
+#                        self.h[t, x] = self.BC[x, 0]
+#                   
+#                    elif  x == 0 and t <> 0: #Neumann BC dh/dx = 0 at the boundary of the domain
+#                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x +1] ) + self.h[t-1, x ]  
+#                   
+#                    elif x == self.numPoints and t <> 0: #Neumann BC dh/dx = 0 at the boundary of the domain
+#                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x ] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
+#                   
+#                    elif t <> 0: 
+#                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
+ 
+            A = tridiag(self.Xsteps+1,1,2,1)
+    
+            self.h[0,:] = np.transpose(self.BC[:,0])
+        #palce boundary conditions in the system
+            for t in range(1,self.timeSteps):
+                self.h[t, :] = (self.K * self.dt/(self.dx*self.dx))*(A.dot(np.transpose(self.h[t-1,:]))) + np.transpose(self.h[t-1,:])
+        #Solve the system!  (Instert sounds of gears crunching)
+             #head array
           
             return self.h
         
