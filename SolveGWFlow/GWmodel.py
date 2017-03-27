@@ -43,7 +43,7 @@ class GWmodel(object):
             raise ValueError('The state was not specifiend properly' )
         
         if dim == 1:
-            self.dim = 1
+            self.dim = 1  #model dimensions
         else:
             raise ValueError('Only one dimension is supported in this release' )
             #higher dimention functionallity not implemented
@@ -51,7 +51,7 @@ class GWmodel(object):
    
     #Set hydraulic conductivity, unnecessary for the homogenous steady-state case. 
     def setK(self, K):  
-       self.K =K
+       self.K =K #hydraulic conductivity
     
       #Set Direchlet boundary conditions.          
     def setDirBC(self, h, X, Y):
@@ -83,8 +83,8 @@ class GWmodel(object):
         # Establish the resolution of the solution
              self.numPoints = numpts #allow users to choose the resolution of their solution in the future
              self.Xsteps = self.numPoints - 2 #When 2 direchlet BC's are used head must be solved at numPoints-2 locations
-             self.dx = (self.BC[1,1] -self.BC[0,1] )/(self.numPoints - 1)  #This and the value of K are useless for solving the steady-state case
-             self.dt = 0
+             self.dx = (self.BC[1,1] -self.BC[0,1] )/(self.numPoints - 1)  #This and the value of K are useless for solving the steady-state case #spatial step size
+             self.dt = 0 #temporal step size
              self.K = 0
         #set up the system of equations, Ah=b
              A = tridiag(self.Xsteps,-1,2,-1)
@@ -94,7 +94,7 @@ class GWmodel(object):
              b[self.Xsteps-1] = self.BC[1,0] 
            
         #Solve the system!  (Instert sounds of gears crunching)
-             self.h = np.linalg.solve(A,b) 
+             self.h = np.linalg.solve(A,b) #head array
        
         #append Direchlet BC's to both ends of the list
              self.h = np.append(self.h, self.BC[1,0])
