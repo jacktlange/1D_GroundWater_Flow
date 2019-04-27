@@ -4,9 +4,6 @@ import numpy as np
 import GWmodel
 import GWplot
 
-
-
-
 # steady state solution to the 1d GW flow equation
 #
 #model = GWmodel.GWmodel('steady',1)
