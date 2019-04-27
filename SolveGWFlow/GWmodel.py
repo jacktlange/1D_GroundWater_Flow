@@ -25,10 +25,6 @@ def tridiag(T,x,y,z,k1=-1, k2=0, k3=1):
     a = [x]*(T-abs(k1)); b = [y]*(T-abs(k2)); c = [z]*(T-abs(k3))
     return np.diag(a, k1) + np.diag(b, k2) + np.diag(c, k3)
 
-
-
-
-
 import numpy as np
 class GWmodel(object):
  
@@ -61,19 +57,15 @@ class GWmodel(object):
             raise ValueError('Please use positive positions')
         
         self.BC = np.append(self.BC, [[h, X, Y]], axis = 0)
-    
-        
+           
         # for the sake of moving forwards in development, I will assume the user inputs these boundary conditions in order of increasing x, 
         # and that h=0 at x=0 is not a valid input. Both of these requirments will be cleaned up later
         if (self.BC[0,0] ==0) and (self.BC[0,1] == 0):
-          self.BC = np.delete(self.BC, (0), axis =0) #remove the row of zeroes on top. There HAS to be a more elegant way to do this
-#        
-        
+          self.BC = np.delete(self.BC, (0), axis =0) #remove the row of zeroes on top. There HAS to be a more elegant way to do this      
       #set Neumann BC's
     def setNeuBC(self):
-        raise NotImplementedError('Neumann BCs not yet implemented')
-        
-        
+        raise NotImplementedError('Neumann BCs not yet implemented')       
+
     #Set up and solve a system of finite difference equations using LAPACK 
     #Return a solution to the GWflow equation in matrix form
     # if transient, numpts is the number of timesteps to be solved
@@ -101,14 +93,6 @@ class GWmodel(object):
              self.h = np.insert(self.h, 0, self.BC[0,0])
         
              return self.h
-     
-
-     
-        
-        
-        
-        
-        
         
         #Soultion for transient one dimensional GW flow (One dimensional diffusion equation)
         #Boundary conditions required: head at time zero, at all points of interest
@@ -123,28 +107,9 @@ class GWmodel(object):
         
             self.timeElapsed =  numpts* self.dt  
             self.timeSteps = int( self.timeElapsed / self.dt )
-        
-        
-        
+         
             self.h = np.zeros((self.timeSteps, self.numPoints) )   #each new row will  be a new timestep, each column will rpresent a position in x
-            
-            #Use forwards differences to solve th ediffusion equation in one dimension
-#            for t in range(0,self.timeSteps+1):
-#                for x in range(0,self.numPoints):
-#                
-#                    if t == 0:
-#                    #put initial conditions into self.h
-#                        self.h[t, x] = self.BC[x, 0]
-#                   
-#                    elif  x == 0 and t <> 0: #Neumann BC dh/dx = 0 at the boundary of the domain
-#                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x +1] ) + self.h[t-1, x ]  
-#                   
-#                    elif x == self.numPoints and t <> 0: #Neumann BC dh/dx = 0 at the boundary of the domain
-#                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x ] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
-#                   
-#                    elif t <> 0: 
-#                        self.h[t, x] = (self.dt * self.K / (self.dx * self.dx))*( self.h[t-1, x +1] - 2* self.h[t-1, x] +self.h[t-1, x -1] ) + self.h[t-1, x ]  
- 
+
             A = tridiag(self.Xsteps+1,1,2,1)
     
             self.h[0,:] = np.transpose(self.BC[:,0])
@@ -155,11 +120,7 @@ class GWmodel(object):
              #head array
           
             return self.h
-        
-        
-        
-        
-        
+ 
     #creat an output csv for head, outputting the most recent solution. The header contains dx and dt values.
     #returns the location of the output file   
     def out(self):   
