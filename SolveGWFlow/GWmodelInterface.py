@@ -7,8 +7,7 @@ import GWplot
 
 
 
-#
-##Uncomment below to observe a steady state solution to the 1d GW flow equation
+# steady state solution to the 1d GW flow equation
 #
 #model = GWmodel.GWmodel('steady',1)
 #
@@ -24,16 +23,7 @@ import GWplot
 #plotter.plot1D(model.out())
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#Uncomment below and run to observe a transient case solution
+#transient case solution
 
 model = GWmodel.GWmodel('transient',1)
 model.setK(1)
